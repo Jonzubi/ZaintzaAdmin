@@ -4,6 +4,7 @@ import { ListItem, Avatar } from 'react-native-elements';
 import Loader from '../../components/Loader';
 import { getCuidadores, getImage } from '../../utils/API';
 import { API_URL } from '../../utils/envConfig';
+import Styles from '../../utils/commonStyles';
 
 const CuidadoresScreen = ({ routes, navigation }) => {
   const [cuidadores, setCuidadores] = useState([]);
@@ -17,7 +18,7 @@ const CuidadoresScreen = ({ routes, navigation }) => {
   }, []);
 
   const renderCuidador = (cuidador) => (
-    <ListItem button>
+    <ListItem>
       <Avatar
         alt="user"
         rounded
@@ -39,7 +40,13 @@ const CuidadoresScreen = ({ routes, navigation }) => {
   const renderLista = () =>
     cuidadores.map((cuidador) => renderCuidador(cuidador.cuidador));
 
-  return isLoading ? <Loader /> : renderLista();
+  return isLoading ? (
+    <View style={Styles.center}>
+      <Loader />
+    </View>
+  ) : (
+    renderLista()
+  );
 };
 
 export default CuidadoresScreen;
