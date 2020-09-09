@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, FlatList } from 'react-native';
 import { ListItem, Avatar } from 'react-native-elements';
 import Loader from '../../components/Loader';
 import { getCuidadores, getImage } from '../../utils/API';
@@ -17,28 +17,39 @@ const CuidadoresScreen = ({ routes, navigation }) => {
     });
   }, []);
 
-  const renderCuidador = (cuidador) => (
-    <ListItem>
+  const renderCuidador = ({ item }) => (
+    <ListItem onPress={() => handleCuidadorClick(item.cuidador)}>
       <Avatar
         alt="user"
         rounded
         source={{
-          uri: `${API_URL}/api/image/${cuidador.direcFotoContacto}`,
+          uri: `${API_URL}/api/image/${item.cuidador.direcFotoContacto}`,
         }}
       />
       <ListItem.Content>
-        <ListItem.Title>{`${cuidador.nombre} ${cuidador.apellido1}`}</ListItem.Title>
+        <ListItem.Title>{`${item.cuidador.nombre} ${item.cuidador.apellido1}`}</ListItem.Title>
         <ListItem.Subtitle>
-          {cuidador.descripcion.length > 30
-            ? `${cuidador.descripcion.slice(0, 30)}...`
-            : cuidador.descripcion}
+          {item.cuidador.descripcion.length > 30
+            ? `${item.cuidador.descripcion.slice(0, 30)}...`
+            : item.cuidador.descripcion}
         </ListItem.Subtitle>
       </ListItem.Content>
     </ListItem>
   );
 
-  const renderLista = () =>
-    cuidadores.map((cuidador) => renderCuidador(cuidador.cuidador));
+  const renderLista = () => (
+    <FlatList
+      data={cuidadores}
+      renderItem={renderCuidador}
+      keyExtractor={(cuidador) =>
+        `${cuidador.cuidador.nombre} ${cuidador.cuidador.apellido1}`
+      }
+    />
+  );
+
+  const handleCuidadorClick = (cuidador) => {
+    navigation.navigate('UserInfo');
+  };
 
   return isLoading ? (
     <View style={Styles.center}>
