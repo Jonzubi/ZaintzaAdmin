@@ -36,4 +36,7 @@ export default StyleSheet.create({
   listSpaceBottom: {
     marginBottom: 15,
   },
+  rowMarginLeft: {
+    marginLeft: 15,
+  },
 });

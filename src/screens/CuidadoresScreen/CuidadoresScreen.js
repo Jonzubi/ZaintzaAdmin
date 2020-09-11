@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, RefreshControl } from 'react-native';
 import { ListItem, Avatar } from 'react-native-elements';
 import Loader from '../../components/Loader';
-import { getCuidadores, getImage } from '../../utils/API';
+import { getCuidadores } from '../../utils/API';
 import { API_URL } from '../../utils/envConfig';
 import Styles from '../../utils/commonStyles';
 
-const CuidadoresScreen = ({ routes, navigation }) => {
+const CuidadoresScreen = ({ navigation }) => {
   const [cuidadores, setCuidadores] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -27,7 +27,8 @@ const CuidadoresScreen = ({ routes, navigation }) => {
   };
 
   const renderCuidador = ({ item }) => (
-    <ListItem onPress={() => handleCuidadorClick(item.cuidador, item.valoraciones)}>
+    <ListItem
+      onPress={() => handleCuidadorClick(item.cuidador, item.valoraciones)}>
       <Avatar
         alt="user"
         rounded
@@ -63,6 +64,7 @@ const CuidadoresScreen = ({ routes, navigation }) => {
     navigation.navigate('UserInfo', {
       cuidador,
       valoraciones,
+      type: 'Cuidador',
     });
   };
 
