@@ -1,5 +1,12 @@
-import React from 'react';
-import { Avatar, Icon, Divider } from 'react-native-elements';
+import React, { useState } from 'react';
+import {
+  Avatar,
+  Icon,
+  Divider,
+  BottomSheet,
+  ListItem,
+  Button,
+} from 'react-native-elements';
 import { View, Text, ScrollView } from 'react-native';
 import moment from 'moment';
 import { API_URL } from '../utils/envConfig';
@@ -9,8 +16,39 @@ import { Colors } from '../utils/colors';
 
 const Cuidador = (props) => {
   const { cuidador, valoraciones } = props;
+  const [sheetVisible, setSheetVisible] = useState(false);
+
+  const sheetList = [
+    {
+      title: 'Banear',
+      icon: 'error',
+      iconColor: 'red',
+    },
+    {
+      title: 'Eliminar foto contacto',
+      icon: 'wallpaper',
+      iconColor: 'yellow',
+    },
+    {
+      title: 'Cancelar',
+      onPress: () => setSheetVisible(false),
+      icon: 'cancel',
+      iconColor: 'blue',
+    },
+  ];
   return (
     <View style={Styles.container}>
+      <Button
+        title="Acciones"
+        icon={
+          <Icon
+            name="security"
+            color={Colors.white}
+            style={Styles.rowMarginRight}
+          />
+        }
+        onPress={() => setSheetVisible(true)}
+      />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{ ...Styles.rowCenter, padding: 15 }}>
           <Avatar
@@ -53,14 +91,12 @@ const Cuidador = (props) => {
           style={{ ...Styles.rowJustifyStart, ...Styles.listSpaceBottom }}
           name="schedule"
         />
-
         {cuidador.diasDisponible.map((dia) => (
           <View style={Styles.rowSpaceBetween}>
             <Text>{traducirDias(dia.dia)}</Text>
             <Text> {`${dia.horaInicio} : ${dia.horaFin}`}</Text>
           </View>
         ))}
-
         <Icon
           style={{
             ...Styles.rowJustifyStart,
@@ -83,7 +119,6 @@ const Cuidador = (props) => {
             cuidador.precioPorPublico.necesidadEspecial || '--'
           } €`}</Text>
         </View>
-
         <Icon
           style={{ ...Styles.rowJustifyStart, ...Styles.listSpaceTop }}
           name="description"
@@ -107,6 +142,19 @@ const Cuidador = (props) => {
             />
           </>
         ))}
+        <BottomSheet isVisible={sheetVisible}>
+          {sheetList.map((l, i) => (
+            <ListItem
+              key={i}
+              containerStyle={l.containerStyle}
+              onPress={l.onPress}>
+              <Icon name={l.icon} color={l.iconColor} />
+              <ListItem.Content>
+                <ListItem.Title style={l.titleStyle}>{l.title}</ListItem.Title>
+              </ListItem.Content>
+            </ListItem>
+          ))}
+        </BottomSheet>
       </ScrollView>
     </View>
   );

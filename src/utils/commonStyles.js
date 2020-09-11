@@ -39,4 +39,7 @@ export default StyleSheet.create({
   rowMarginLeft: {
     marginLeft: 15,
   },
+  rowMarginRight: {
+    marginRight: 15,
+  },
 });
