@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList } from 'react-native';
+import { View, Text, FlatList, RefreshControl } from 'react-native';
 import { ListItem, Avatar } from 'react-native-elements';
 import Loader from '../../components/Loader';
 import { getCuidadores, getImage } from '../../utils/API';
@@ -8,17 +8,26 @@ import Styles from '../../utils/commonStyles';
 
 const CuidadoresScreen = ({ routes, navigation }) => {
   const [cuidadores, setCuidadores] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    refreshData();
+  }, []);
+
+  const refreshData = () => {
     getCuidadores().then((cuidData) => {
       setCuidadores(cuidData.data);
       setIsLoading(false);
     });
-  }, []);
+
+    if (refreshing) {
+      setRefreshing(false);
+    }
+  };
 
   const renderCuidador = ({ item }) => (
-    <ListItem onPress={() => handleCuidadorClick(item.cuidador)}>
+    <ListItem onPress={() => handleCuidadorClick(item.cuidador, item.valoraciones)}>
       <Avatar
         alt="user"
         rounded
@@ -39,6 +48,9 @@ const CuidadoresScreen = ({ routes, navigation }) => {
 
   const renderLista = () => (
     <FlatList
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={refreshData} />
+      }
       data={cuidadores}
       renderItem={renderCuidador}
       keyExtractor={(cuidador) =>
@@ -47,8 +59,11 @@ const CuidadoresScreen = ({ routes, navigation }) => {
     />
   );
 
-  const handleCuidadorClick = (cuidador) => {
-    navigation.navigate('UserInfo');
+  const handleCuidadorClick = (cuidador, valoraciones) => {
+    navigation.navigate('UserInfo', {
+      cuidador,
+      valoraciones,
+    });
   };
 
   return isLoading ? (

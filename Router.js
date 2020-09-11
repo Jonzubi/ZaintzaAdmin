@@ -26,7 +26,7 @@ export default () => (
           title: 'Anuncios',
         }}
       />
+      <Stack.Screen name="UserInfo" component={UserInfoScreen} />
     </Drawer.Navigator>
-    <Stack.Screen name="UserInfo" component={UserInfoScreen} />
   </NavigationContainer>
 );
