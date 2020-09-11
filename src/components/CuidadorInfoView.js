@@ -7,9 +7,10 @@ import {
   ListItem,
   Button,
 } from 'react-native-elements';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, ToastAndroid } from 'react-native';
 import moment from 'moment';
 import { API_URL } from '../utils/envConfig';
+import { banUser } from '../utils/API';
 import Styles from '../utils/commonStyles';
 import { traducirDias } from '../utils/functions';
 import { Colors } from '../utils/colors';
@@ -23,6 +24,7 @@ const Cuidador = (props) => {
       title: 'Banear',
       icon: 'error',
       iconColor: 'red',
+      onPress: () => handleBanUser(),
     },
     {
       title: 'Eliminar foto contacto',
@@ -36,6 +38,23 @@ const Cuidador = (props) => {
       iconColor: 'blue',
     },
   ];
+
+  const handleBanUser = async () => {
+    setSheetVisible(false);
+    await banUser(cuidador._id, 30, 'cuidador').catch(() => {
+      ToastAndroid.showWithGravity(
+        'ERROR',
+        ToastAndroid.LONG,
+        ToastAndroid.BOTTOM,
+      );
+    });
+    ToastAndroid.showWithGravity(
+      'BANEADO!',
+      ToastAndroid.LONG,
+      ToastAndroid.BOTTOM,
+    );
+  };
+
   return (
     <View style={Styles.container}>
       <Button
