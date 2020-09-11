@@ -11,7 +11,7 @@ const Cuidador = (props) => {
   const { cuidador, valoraciones } = props;
   return (
     <View style={Styles.container}>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{ ...Styles.rowCenter, padding: 15 }}>
           <Avatar
             rounded

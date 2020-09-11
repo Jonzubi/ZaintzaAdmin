@@ -9,7 +9,7 @@ const AnuncioInfoView = (props) => {
   const { anuncio } = props;
   return (
     <View style={Styles.container}>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{ ...Styles.rowCenter, padding: 15 }}>
           <Avatar
             rounded
