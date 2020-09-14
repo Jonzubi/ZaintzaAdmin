@@ -7,6 +7,7 @@ import {
   ListItem,
   Button,
 } from 'react-native-elements';
+import { useSelector } from 'react-redux';
 import { View, Text, ScrollView, ToastAndroid } from 'react-native';
 import moment from 'moment';
 import { API_URL } from '../utils/envConfig';
@@ -16,6 +17,7 @@ import { traducirDias } from '../utils/functions';
 import { Colors } from '../utils/colors';
 
 const Cuidador = (props) => {
+  const socket = useSelector((state) => state.socket.socket);
   const { cuidador, valoraciones } = props;
   const [sheetVisible, setSheetVisible] = useState(false);
 
@@ -41,12 +43,18 @@ const Cuidador = (props) => {
 
   const handleBanUser = async () => {
     setSheetVisible(false);
-    await banUser(cuidador._id, 30, 'cuidador').catch(() => {
+    await banUser(cuidador._id, 30, 'cuidador').catch((err) => {
+      console.log(err.response.data);
       ToastAndroid.showWithGravity(
         'ERROR',
         ToastAndroid.LONG,
         ToastAndroid.BOTTOM,
       );
+      return;
+    });
+    socket.emit('kickBanned', {
+      idCuidador: cuidador._id,
+      banDays: 30,
     });
     ToastAndroid.showWithGravity(
       'BANEADO!',

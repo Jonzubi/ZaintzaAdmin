@@ -9,7 +9,7 @@ const getCuidadores = () =>
 const getAnuncios = () =>
   axios.get(`${API_URL}/api/procedures/getAnunciosConPerfil`);
 
-const banUser = ({ idCuidador, banDays, banType }) =>
+const banUser = (idCuidador, banDays, banType) =>
   axios.post(`${API_URL}/api/procedures/banUser`, {
     idCuidador,
     banDays,

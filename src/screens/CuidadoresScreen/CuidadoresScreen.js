@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, RefreshControl } from 'react-native';
-import { useSelector } from 'react-redux';
 import { ListItem, Avatar } from 'react-native-elements';
 import Loader from '../../components/Loader';
 import { getCuidadores } from '../../utils/API';
@@ -9,7 +8,6 @@ import { API_URL } from '../../utils/envConfig';
 import Styles from '../../utils/commonStyles';
 
 const CuidadoresScreen = ({ navigation }) => {
-  const socket = useSelector((state) => state.socket.socket);
   const [cuidadores, setCuidadores] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
