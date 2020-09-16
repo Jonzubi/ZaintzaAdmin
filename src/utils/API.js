@@ -25,4 +25,14 @@ const deleteImgContact = (idCuidador) =>
     idCuidador,
   });
 
-export { getCuidadores, getAnuncios, banUser, unBanUser, deleteImgContact };
+const isUserBanned = (idPerfil) =>
+  axios.get(`${API_URL}/api/procedures/isUserBanned/${idPerfil}`);
+
+export {
+  getCuidadores,
+  getAnuncios,
+  banUser,
+  unBanUser,
+  deleteImgContact,
+  isUserBanned,
+};

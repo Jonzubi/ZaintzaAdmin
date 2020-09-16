@@ -1,12 +1,106 @@
-import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
-import { Avatar, Icon, Divider, ListItem } from 'react-native-elements';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { View, Text, ScrollView, ToastAndroid } from 'react-native';
+import { Avatar, Icon, ListItem, BottomSheet } from 'react-native-elements';
 import { API_URL } from '../utils/envConfig';
+import { isUserBanned, banUser, unBanUser } from '../utils/API';
 import Styles from '../utils/commonStyles';
 import { traducirDias } from '../utils/functions';
 
 const AnuncioInfoView = (props) => {
+  const socket = useSelector((state) => state.socket.socket);
+  const [sheetVisible, setSheetVisible] = useState(false);
   const { anuncio } = props;
+
+  let sheetList = [
+    {
+      title: 'Cancelar',
+      onPress: () => setSheetVisible(false),
+      icon: 'cancel',
+      iconColor: 'blue',
+    },
+  ];
+
+  const handleOpenActionSheet = async () => {
+    const isBanned = await (await isUserBanned(anuncio.idCliente)).data;
+
+    if (isBanned === 'true') {
+      if (sheetList.length === 1) {
+        sheetList.unshift({
+          title: 'Banear',
+          icon: 'error',
+          iconColor: 'red',
+          onPress: () => handleBanUser(),
+        });
+      } else {
+        sheetList[0] = {
+          title: 'Banear',
+          icon: 'error',
+          iconColor: 'red',
+          onPress: () => handleBanUser(),
+        };
+      }
+    } else {
+      if (sheetList.length === 1) {
+        sheetList.unshift({
+          title: 'Desbanear',
+          icon: 'error',
+          iconColor: 'red',
+          onPress: () => handleUnBanUser(),
+        });
+      } else {
+        sheetList[0] = {
+          title: 'Desbanear',
+          icon: 'error',
+          iconColor: 'red',
+          onPress: () => handleUnBanUser(),
+        };
+      }
+    }
+
+    setSheetVisible(true);
+  };
+
+  const handleUnBanUser = async () => {
+    setSheetVisible(false);
+    await unBanUser(anuncio.idCliente).catch((err) => {
+      console.log(err.response.data);
+      ToastAndroid.showWithGravity(
+        'ERROR',
+        ToastAndroid.LONG,
+        ToastAndroid.BOTTOM,
+      );
+      return;
+    });
+    ToastAndroid.showWithGravity(
+      'UNBANNEADO!',
+      ToastAndroid.LONG,
+      ToastAndroid.BOTTOM,
+    );
+  };
+
+  const handleBanUser = async () => {
+    setSheetVisible(false);
+    await banUser(anuncio.idCliente, 30).catch((err) => {
+      console.log(err.response.data);
+      ToastAndroid.showWithGravity(
+        'ERROR',
+        ToastAndroid.LONG,
+        ToastAndroid.BOTTOM,
+      );
+      return;
+    });
+    socket.emit('kickBanned', {
+      idCuidador: anuncio.idCliente,
+      banDays: 30,
+    });
+    ToastAndroid.showWithGravity(
+      'BANEADO!',
+      ToastAndroid.LONG,
+      ToastAndroid.BOTTOM,
+    );
+  };
+
   return (
     <View style={Styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -80,7 +174,9 @@ const AnuncioInfoView = (props) => {
           <Text style={Styles.rowMarginLeft}>USUARIO</Text>
         </View>
 
-        <ListItem style={Styles.listSpaceTop}>
+        <ListItem
+          style={Styles.listSpaceTop}
+          onPress={() => handleOpenActionSheet}>
           <Avatar
             rounded
             source={{
@@ -94,6 +190,19 @@ const AnuncioInfoView = (props) => {
             }`}</ListItem.Subtitle>
           </ListItem.Content>
         </ListItem>
+        <BottomSheet isVisible={sheetVisible}>
+          {sheetList.map((l, i) => (
+            <ListItem
+              key={i}
+              containerStyle={l.containerStyle}
+              onPress={l.onPress}>
+              <Icon name={l.icon} color={l.iconColor} />
+              <ListItem.Content>
+                <ListItem.Title style={l.titleStyle}>{l.title}</ListItem.Title>
+              </ListItem.Content>
+            </ListItem>
+          ))}
+        </BottomSheet>
       </ScrollView>
     </View>
   );
