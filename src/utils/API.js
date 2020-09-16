@@ -9,11 +9,20 @@ const getCuidadores = () =>
 const getAnuncios = () =>
   axios.get(`${API_URL}/api/procedures/getAnunciosConPerfil`);
 
-const banUser = (idCuidador, banDays, banType) =>
+const banUser = (idCuidador, banDays) =>
   axios.post(`${API_URL}/api/procedures/banUser`, {
     idCuidador,
     banDays,
-    banType,
   });
 
-export { getCuidadores, getAnuncios, banUser };
+const unBanUser = (idCuidador) =>
+  axios.post(`${API_URL}/api/procedures/unBanUser`, {
+    idCuidador,
+  });
+
+const deleteImgContact = (idCuidador) =>
+  axios.post(`${API_URL}/api/procedures/deleteCuidadorImg`, {
+    idCuidador,
+  });
+
+export { getCuidadores, getAnuncios, banUser, unBanUser, deleteImgContact };

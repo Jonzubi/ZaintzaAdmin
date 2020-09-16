@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import { View, Text, ScrollView, ToastAndroid } from 'react-native';
 import moment from 'moment';
 import { API_URL } from '../utils/envConfig';
-import { banUser } from '../utils/API';
+import { banUser, unBanUser, deleteImgContact } from '../utils/API';
 import Styles from '../utils/commonStyles';
 import { traducirDias } from '../utils/functions';
 import { Colors } from '../utils/colors';
@@ -20,18 +20,14 @@ const Cuidador = (props) => {
   const socket = useSelector((state) => state.socket.socket);
   const { cuidador, valoraciones } = props;
   const [sheetVisible, setSheetVisible] = useState(false);
+  const isBanned = moment().isBefore(cuidador.bannedUntilDate);
 
   const sheetList = [
-    {
-      title: 'Banear',
-      icon: 'error',
-      iconColor: 'red',
-      onPress: () => handleBanUser(),
-    },
     {
       title: 'Eliminar foto contacto',
       icon: 'wallpaper',
       iconColor: 'yellow',
+      onPress: () => handleDeleteImg(),
     },
     {
       title: 'Cancelar',
@@ -41,9 +37,61 @@ const Cuidador = (props) => {
     },
   ];
 
+  if (isBanned) {
+    sheetList.unshift({
+      title: 'Banear',
+      icon: 'error',
+      iconColor: 'red',
+      onPress: () => handleBanUser(),
+    });
+  } else {
+    sheetList.unshift({
+      title: 'Desbanear',
+      icon: 'error',
+      iconColor: 'green',
+      onPress: () => handleUnBanUser(),
+    });
+  }
+
+  const handleDeleteImg = async () => {
+    setSheetVisible(false);
+    await deleteImgContact(cuidador._id).catch((err) => {
+      console.log(err.response.data);
+      ToastAndroid.showWithGravity(
+        'ERROR',
+        ToastAndroid.LONG,
+        ToastAndroid.BOTTOM,
+      );
+      return;
+    });
+    ToastAndroid.showWithGravity(
+      'IMAGEN ELIMINADO!',
+      ToastAndroid.LONG,
+      ToastAndroid.BOTTOM,
+    );
+  };
+
+  const handleUnBanUser = async () => {
+    setSheetVisible(false);
+    await unBanUser(cuidador._id).catch((err) => {
+      console.log(err.response.data);
+      ToastAndroid.showWithGravity(
+        'ERROR',
+        ToastAndroid.LONG,
+        ToastAndroid.BOTTOM,
+      );
+      return;
+    });
+    ToastAndroid.showWithGravity(
+      'UNBANNEADO!',
+      ToastAndroid.LONG,
+      ToastAndroid.BOTTOM,
+    );
+  };
+
   const handleBanUser = async () => {
     setSheetVisible(false);
-    await banUser(cuidador._id, 30, 'cuidador').catch((err) => {
+    await banUser(cuidador._id, 30).catch((err) => {
       console.log(err.response.data);
       ToastAndroid.showWithGravity(
         'ERROR',
