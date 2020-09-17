@@ -76,6 +76,7 @@ const AnuncioInfoView = (props) => {
       ToastAndroid.LONG,
       ToastAndroid.BOTTOM,
     );
+    setIsBanned(false);
   };
 
   const handleBanUser = async () => {
@@ -98,6 +99,7 @@ const AnuncioInfoView = (props) => {
       ToastAndroid.LONG,
       ToastAndroid.BOTTOM,
     );
+    setIsBanned(true);
   };
 
   return (

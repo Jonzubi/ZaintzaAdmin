@@ -20,37 +20,54 @@ const Cuidador = (props) => {
   const socket = useSelector((state) => state.socket.socket);
   const { cuidador, valoraciones } = props;
   const [sheetVisible, setSheetVisible] = useState(false);
-  const isBanned = moment().isBefore(cuidador.bannedUntilDate);
+  const [isBanned, setIsBanned] = useState(
+    moment().isBefore(cuidador.bannedUntilDate),
+  );
 
-  const sheetList = [
-    {
-      title: 'Eliminar foto contacto',
-      icon: 'wallpaper',
-      iconColor: 'yellow',
-      onPress: () => handleDeleteImg(),
-    },
-    {
-      title: 'Cancelar',
-      onPress: () => setSheetVisible(false),
-      icon: 'cancel',
-      iconColor: 'blue',
-    },
-  ];
-
-  if (isBanned) {
-    sheetList.unshift({
-      title: 'Banear',
-      icon: 'error',
-      iconColor: 'red',
-      onPress: () => handleBanUser(),
-    });
+  let sheetList = [];
+  console.log(isBanned);
+  if (!isBanned) {
+    sheetList = [
+      {
+        title: 'Banear',
+        icon: 'error',
+        iconColor: 'red',
+        onPress: () => handleBanUser(),
+      },
+      {
+        title: 'Eliminar foto contacto',
+        icon: 'wallpaper',
+        iconColor: 'yellow',
+        onPress: () => handleDeleteImg(),
+      },
+      {
+        title: 'Cancelar',
+        onPress: () => setSheetVisible(false),
+        icon: 'cancel',
+        iconColor: 'blue',
+      },
+    ];
   } else {
-    sheetList.unshift({
-      title: 'Desbanear',
-      icon: 'error',
-      iconColor: 'green',
-      onPress: () => handleUnBanUser(),
-    });
+    sheetList = [
+      {
+        title: 'Desbanear',
+        icon: 'error',
+        iconColor: 'green',
+        onPress: () => handleUnBanUser(),
+      },
+      {
+        title: 'Eliminar foto contacto',
+        icon: 'wallpaper',
+        iconColor: 'yellow',
+        onPress: () => handleDeleteImg(),
+      },
+      {
+        title: 'Cancelar',
+        onPress: () => setSheetVisible(false),
+        icon: 'cancel',
+        iconColor: 'blue',
+      },
+    ];
   }
 
   const handleDeleteImg = async () => {
@@ -87,6 +104,7 @@ const Cuidador = (props) => {
       ToastAndroid.LONG,
       ToastAndroid.BOTTOM,
     );
+    setIsBanned(false);
   };
 
   const handleBanUser = async () => {
@@ -109,6 +127,7 @@ const Cuidador = (props) => {
       ToastAndroid.LONG,
       ToastAndroid.BOTTOM,
     );
+    setIsBanned(true);
   };
 
   return (
