@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Avatar,
   Icon,
@@ -11,7 +11,12 @@ import { useSelector } from 'react-redux';
 import { View, Text, ScrollView, ToastAndroid } from 'react-native';
 import moment from 'moment';
 import { API_URL } from '../utils/envConfig';
-import { banUser, unBanUser, deleteImgContact } from '../utils/API';
+import {
+  banUser,
+  unBanUser,
+  deleteImgContact,
+  isUserBanned,
+} from '../utils/API';
 import Styles from '../utils/commonStyles';
 import { traducirDias } from '../utils/functions';
 import { Colors } from '../utils/colors';
@@ -20,12 +25,18 @@ const Cuidador = (props) => {
   const socket = useSelector((state) => state.socket.socket);
   const { cuidador, valoraciones } = props;
   const [sheetVisible, setSheetVisible] = useState(false);
-  const [isBanned, setIsBanned] = useState(
-    moment().isBefore(cuidador.bannedUntilDate),
-  );
+  console.log('date', cuidador);
+  const [isBanned, setIsBanned] = useState(false);
+
+  useEffect(() => {
+    const init = async () => {
+      const auxIsBanned = await (await isUserBanned(cuidador._id)).data;
+      setIsBanned(auxIsBanned);
+    };
+    init();
+  }, []);
 
   let sheetList = [];
-  console.log(isBanned);
   if (!isBanned) {
     sheetList = [
       {
