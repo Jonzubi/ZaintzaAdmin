@@ -101,7 +101,7 @@ const Cuidador = (props) => {
       return;
     });
     socket.emit('kickBanned', {
-      idCuidador: cuidador._id,
+      idPerfil: cuidador._id,
       banDays: 30,
     });
     ToastAndroid.showWithGravity(

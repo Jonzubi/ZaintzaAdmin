@@ -22,7 +22,7 @@ const AnuncioInfoView = (props) => {
   ];
 
   const handleOpenActionSheet = async () => {
-    const isBanned = await (await isUserBanned(anuncio.idCliente)).data;
+    const isBanned = await (await isUserBanned(anuncio.idCliente._id)).data;
 
     if (isBanned === 'true') {
       if (sheetList.length === 1) {
@@ -63,7 +63,7 @@ const AnuncioInfoView = (props) => {
 
   const handleUnBanUser = async () => {
     setSheetVisible(false);
-    await unBanUser(anuncio.idCliente).catch((err) => {
+    await unBanUser(anuncio.idCliente._id).catch((err) => {
       console.log(err.response.data);
       ToastAndroid.showWithGravity(
         'ERROR',
@@ -81,7 +81,7 @@ const AnuncioInfoView = (props) => {
 
   const handleBanUser = async () => {
     setSheetVisible(false);
-    await banUser(anuncio.idCliente, 30).catch((err) => {
+    await banUser(anuncio.idCliente._id, 30).catch((err) => {
       console.log(err.response.data);
       ToastAndroid.showWithGravity(
         'ERROR',
@@ -91,7 +91,7 @@ const AnuncioInfoView = (props) => {
       return;
     });
     socket.emit('kickBanned', {
-      idCuidador: anuncio.idCliente,
+      idPerfil: anuncio.idCliente._id,
       banDays: 30,
     });
     ToastAndroid.showWithGravity(
