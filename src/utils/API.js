@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_URL } from './envConfig';
+import { token } from './token';
 
 const getCuidadores = () =>
   axios.get(
@@ -13,16 +14,19 @@ const banUser = (idCuidador, banDays) =>
   axios.post(`${API_URL}/api/procedures/banUser`, {
     idCuidador,
     banDays,
+    token,
   });
 
 const unBanUser = (idCuidador) =>
   axios.post(`${API_URL}/api/procedures/unBanUser`, {
     idCuidador,
+    token,
   });
 
 const deleteImgContact = (idCuidador) =>
   axios.post(`${API_URL}/api/procedures/deleteCuidadorImg`, {
     idCuidador,
+    token,
   });
 
 const isUserBanned = (idPerfil) =>
