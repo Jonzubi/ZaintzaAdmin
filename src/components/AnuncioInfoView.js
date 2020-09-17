@@ -10,6 +10,7 @@ import { traducirDias } from '../utils/functions';
 const AnuncioInfoView = (props) => {
   const socket = useSelector((state) => state.socket.socket);
   const [sheetVisible, setSheetVisible] = useState(false);
+  const [isBanned, setIsBanned] = useState(false);
   const { anuncio } = props;
 
   let sheetList = [
@@ -20,44 +21,42 @@ const AnuncioInfoView = (props) => {
       iconColor: 'blue',
     },
   ];
+  console.log(isBanned);
+  if (isBanned) {
+    sheetList = [
+      {
+        title: 'Desbanear',
+        icon: 'error',
+        iconColor: 'green',
+        onPress: () => handleUnBanUser(),
+      },
+      {
+        title: 'Cancelar',
+        onPress: () => setSheetVisible(false),
+        icon: 'cancel',
+        iconColor: 'blue',
+      },
+    ];
+  } else {
+    sheetList = [
+      {
+        title: 'Banear',
+        icon: 'error',
+        iconColor: 'red',
+        onPress: () => handleBanUser(),
+      },
+      {
+        title: 'Cancelar',
+        onPress: () => setSheetVisible(false),
+        icon: 'cancel',
+        iconColor: 'blue',
+      },
+    ];
+  }
 
   const handleOpenActionSheet = async () => {
-    const isBanned = await (await isUserBanned(anuncio.idCliente._id)).data;
-
-    if (isBanned === 'true') {
-      if (sheetList.length === 1) {
-        sheetList.unshift({
-          title: 'Banear',
-          icon: 'error',
-          iconColor: 'red',
-          onPress: () => handleBanUser(),
-        });
-      } else {
-        sheetList[0] = {
-          title: 'Banear',
-          icon: 'error',
-          iconColor: 'red',
-          onPress: () => handleBanUser(),
-        };
-      }
-    } else {
-      if (sheetList.length === 1) {
-        sheetList.unshift({
-          title: 'Desbanear',
-          icon: 'error',
-          iconColor: 'red',
-          onPress: () => handleUnBanUser(),
-        });
-      } else {
-        sheetList[0] = {
-          title: 'Desbanear',
-          icon: 'error',
-          iconColor: 'red',
-          onPress: () => handleUnBanUser(),
-        };
-      }
-    }
-
+    const auxIsBanned = await (await isUserBanned(anuncio.idCliente._id)).data;
+    setIsBanned(auxIsBanned);
     setSheetVisible(true);
   };
 
@@ -176,7 +175,7 @@ const AnuncioInfoView = (props) => {
 
         <ListItem
           style={Styles.listSpaceTop}
-          onPress={() => handleOpenActionSheet}>
+          onPress={() => handleOpenActionSheet()}>
           <Avatar
             rounded
             source={{
