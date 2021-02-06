@@ -16,6 +16,7 @@ import {
   unBanUser,
   deleteImgContact,
   isUserBanned,
+  reSendValidationEmail,
 } from '../utils/API';
 import Styles from '../utils/commonStyles';
 import { traducirDias } from '../utils/functions';
@@ -36,62 +37,56 @@ const Cuidador = (props) => {
     init();
   }, []);
 
-  let sheetList = [];
+  let sheetList = [
+    {
+      title: 'Reenviar email de confirmación',
+      icon: 'email',
+      iconColor: 'pink',
+      onPress: () => handleReSendValidationEmail(),
+    },
+    {
+      title: 'Eliminar foto contacto',
+      icon: 'wallpaper',
+      iconColor: 'yellow',
+      onPress: () => handleDeleteImg(),
+    },
+    {
+      title: 'Cancelar',
+      onPress: () => setSheetVisible(false),
+      icon: 'cancel',
+      iconColor: 'blue',
+    },
+  ];
   if (!isBanned) {
-    sheetList = [
-      {
-        title: 'Banear',
-        icon: 'error',
-        iconColor: 'red',
-        onPress: () => handleBanUser(),
-      },
-      {
-        title: 'Eliminar foto contacto',
-        icon: 'wallpaper',
-        iconColor: 'yellow',
-        onPress: () => handleDeleteImg(),
-      },
-      {
-        title: 'Cancelar',
-        onPress: () => setSheetVisible(false),
-        icon: 'cancel',
-        iconColor: 'blue',
-      },
-    ];
+    sheetList.unshift({
+      title: 'Banear',
+      icon: 'error',
+      iconColor: 'red',
+      onPress: () => handleBanUser(),
+    });
   } else {
-    sheetList = [
-      {
-        title: 'Desbanear',
-        icon: 'error',
-        iconColor: 'green',
-        onPress: () => handleUnBanUser(),
-      },
-      {
-        title: 'Eliminar foto contacto',
-        icon: 'wallpaper',
-        iconColor: 'yellow',
-        onPress: () => handleDeleteImg(),
-      },
-      {
-        title: 'Cancelar',
-        onPress: () => setSheetVisible(false),
-        icon: 'cancel',
-        iconColor: 'blue',
-      },
-    ];
+    sheetList.unshift({
+      title: 'Desbanear',
+      icon: 'error',
+      iconColor: 'green',
+      onPress: () => handleUnBanUser(),
+    });
   }
 
   const handleDeleteImg = async () => {
     setSheetVisible(false);
-    await deleteImgContact(cuidador._id).catch((err) => {
+    const error = await deleteImgContact(cuidador._id).catch((err) => {
       console.log(err.response.data);
       ToastAndroid.showWithGravity(
         'ERROR',
         ToastAndroid.LONG,
         ToastAndroid.BOTTOM,
       );
-      return;
+      return new Error();
     });
+    if (error instanceof Error) {
+      return;
+    }
     ToastAndroid.showWithGravity(
       'IMAGEN ELIMINADO!',
       ToastAndroid.LONG,
@@ -101,15 +96,18 @@ const Cuidador = (props) => {
 
   const handleUnBanUser = async () => {
     setSheetVisible(false);
-    await unBanUser(cuidador._id).catch((err) => {
+    const error = await unBanUser(cuidador._id).catch((err) => {
       console.log(err.response.data);
       ToastAndroid.showWithGravity(
         'ERROR',
         ToastAndroid.LONG,
         ToastAndroid.BOTTOM,
       );
-      return;
+      return new Error();
     });
+    if (error instanceof Error) {
+      return;
+    }
     ToastAndroid.showWithGravity(
       'UNBANNEADO!',
       ToastAndroid.LONG,
@@ -120,15 +118,18 @@ const Cuidador = (props) => {
 
   const handleBanUser = async () => {
     setSheetVisible(false);
-    await banUser(cuidador._id, 30).catch((err) => {
+    const error = await banUser(cuidador._id, 30).catch((err) => {
       console.log(err.response.data);
       ToastAndroid.showWithGravity(
         'ERROR',
         ToastAndroid.LONG,
         ToastAndroid.BOTTOM,
       );
-      return;
+      return new Error();
     });
+    if (error instanceof Error) {
+      return;
+    }
     socket.emit('kickBanned', {
       idPerfil: cuidador._id,
       banDays: 30,
@@ -139,6 +140,32 @@ const Cuidador = (props) => {
       ToastAndroid.BOTTOM,
     );
     setIsBanned(true);
+  };
+
+  const handleReSendValidationEmail = async () => {
+    setSheetVisible(false);
+    const error = await reSendValidationEmail(
+      cuidador._id,
+      cuidador.nombre,
+      cuidador.apellido1,
+      cuidador.apellido2,
+    ).catch((err) => {
+      console.log(err.response.data);
+      ToastAndroid.showWithGravity(
+        'ERROR AL ENVIAR',
+        ToastAndroid.LONG,
+        ToastAndroid.BOTTOM,
+      );
+      return new Error();
+    });
+    if (error instanceof Error) {
+      return;
+    }
+    ToastAndroid.showWithGravity(
+      'ENVIADO!',
+      ToastAndroid.LONG,
+      ToastAndroid.BOTTOM,
+    );
   };
 
   return (
