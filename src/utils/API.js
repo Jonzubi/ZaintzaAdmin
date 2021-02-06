@@ -4,7 +4,7 @@ import { token } from './token';
 
 const getCuidadores = () =>
   axios.get(
-    `${API_URL}/api/procedures/getCuidadoresConValoraciones?requiredCards=100&maxDistance=1000`,
+    `${API_URL}/api/procedures/getCuidadoresConValoraciones?requiredCards=100&maxDistance=1000&todos=1`,
   );
 
 const getAnuncios = () =>
